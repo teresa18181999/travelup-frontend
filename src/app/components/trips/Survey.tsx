@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { ArrowLeft, Sparkles } from 'lucide-react';
+import { ArrowLeft, Sparkles, X } from 'lucide-react';
 
 type SurveyAnswers = {
   duration: number;
@@ -81,7 +81,13 @@ export default function Survey() {
         </button>
 
         <div className="flex-1 px-4 pb-8 flex items-center">
-          <div className="w-full bg-white rounded-3xl p-8 shadow-lg">
+          <div className="w-full bg-white rounded-3xl p-8 shadow-lg relative">
+            <button
+              onClick={() => navigate('/home')}
+              className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
             <div className="flex items-center gap-3 mb-6">
               <div className="bg-[#92C0E8]/20 p-3 rounded-2xl">
                 <Sparkles className="w-8 h-8 text-[#92C0E8]" />

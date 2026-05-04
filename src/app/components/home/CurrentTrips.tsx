@@ -107,8 +107,8 @@ export default function CurrentTrips({ onGoToNewTrip }: CurrentTripsProps) {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center">
-                  <MapPin className="w-20 h-20 text-gray-500 opacity-40" />
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                  <MapPin className="w-20 h-20 text-gray-400 opacity-50" />
                 </div>
               )}
               <div className="absolute top-3 right-3 bg-[#EEB19A] text-white px-3 py-1 rounded-full text-sm">

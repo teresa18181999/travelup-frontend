@@ -133,8 +133,8 @@ export default function MyTrips({ onGoToNewTrip }: MyTripsProps) {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center">
-                    <Plane className="w-20 h-20 text-gray-500 opacity-40" />
+                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                    <Plane className="w-20 h-20 text-gray-400 opacity-50" />
                   </div>
                 )}
               </div>

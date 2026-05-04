@@ -6,7 +6,6 @@ export default function Notifications() {
   const navigate = useNavigate();
   const [settings, setSettings] = useState({
     tripUpdates: true,
-    newMessages: true,
     invitations: true,
     reminders: true,
     emailNotifications: false
@@ -53,22 +52,6 @@ export default function Notifications() {
                   type="checkbox"
                   checked={settings.tripUpdates}
                   onChange={() => handleToggle('tripUpdates')}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#92C0E8]"></div>
-              </label>
-            </div>
-
-            <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
-              <div>
-                <h2 className="text-sm">Mensajes nuevos</h2>
-                <p className="text-xs text-gray-500">Mensajes de otros participantes</p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={settings.newMessages}
-                  onChange={() => handleToggle('newMessages')}
                   className="sr-only peer"
                 />
                 <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#92C0E8]"></div>

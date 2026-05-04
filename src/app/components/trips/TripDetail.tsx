@@ -1,6 +1,21 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { ArrowLeft, ChevronLeft, ChevronRight, Plane, Calendar, X, Upload, Clock, Hotel, MapPin as ActivityIcon, Camera, Edit2, User } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, Plane, Calendar, X, Upload, Clock, Hotel, MapPin as ActivityIcon, Camera, Edit2, FileText, File, Lock } from 'lucide-react';
+import ParticipantSelector from '../common/ParticipantSelector';
+import { getUserProfile } from '../../utils/userProfile';
+
+interface Participant {
+  name: string;
+  phone: string;
+  isCurrentUser?: boolean;
+}
+
+interface ActivityDocument {
+  id: string;
+  name: string;
+  url: string;
+  type: string;
+}
 
 type Activity = {
   id: string;
@@ -18,6 +33,231 @@ type DayData = {
 };
 
 const mockTrips: Record<string, { name: string; dates: string; image?: string; days: DayData[] }> = {
+  'completed-1': {
+    name: 'Barcelona, España',
+    dates: '15-20 Ene 2026',
+    image: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=800&auto=format&fit=crop',
+    days: [
+      {
+        date: '15 Ene 2026',
+        activities: [
+          {
+            id: 'bcn-1',
+            time: '10:00',
+            title: 'Visita Sagrada Familia',
+            location: 'Carrer de Mallorca, 401',
+            type: 'activity'
+          }
+        ],
+        photos: [
+          'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=400&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1562883676-8c7feb83f09b?w=400&auto=format&fit=crop'
+        ]
+      },
+      {
+        date: '16 Ene 2026',
+        activities: [
+          {
+            id: 'bcn-2',
+            time: '09:30',
+            title: 'Park Güell',
+            location: 'Carrer d\'Olot, s/n',
+            type: 'activity'
+          }
+        ],
+        photos: [
+          'https://images.unsplash.com/photo-1579282240050-352db0a14c21?w=400&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1511527661048-7fe73d85e9a4?w=400&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?w=400&auto=format&fit=crop'
+        ]
+      },
+      {
+        date: '17 Ene 2026',
+        activities: [
+          {
+            id: 'bcn-3',
+            time: '11:00',
+            title: 'La Rambla y Mercado de La Boquería',
+            location: 'La Rambla, 91',
+            type: 'activity'
+          }
+        ],
+        photos: [
+          'https://images.unsplash.com/photo-1558642891-54be180ea339?w=400&auto=format&fit=crop'
+        ]
+      },
+      { date: '18 Ene 2026', activities: [], photos: [] },
+      { date: '19 Ene 2026', activities: [], photos: [] },
+      { date: '20 Ene 2026', activities: [], photos: [] }
+    ]
+  },
+  'completed-2': {
+    name: 'Lisboa, Portugal',
+    dates: '5-10 Mar 2026',
+    image: 'https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=800&auto=format&fit=crop',
+    days: [
+      {
+        date: '5 Mar 2026',
+        activities: [
+          {
+            id: 'lis-1',
+            time: '14:00',
+            title: 'Check-in Hotel',
+            location: 'Avenida da Liberdade',
+            type: 'hotel'
+          }
+        ],
+        photos: [
+          'https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=400&auto=format&fit=crop'
+        ]
+      },
+      {
+        date: '6 Mar 2026',
+        activities: [
+          {
+            id: 'lis-2',
+            time: '10:00',
+            title: 'Torre de Belém',
+            location: 'Avenida Brasília',
+            type: 'activity'
+          },
+          {
+            id: 'lis-3',
+            time: '15:00',
+            title: 'Monasterio de los Jerónimos',
+            location: 'Praça do Império',
+            type: 'activity'
+          }
+        ],
+        photos: [
+          'https://images.unsplash.com/photo-1588530825994-f1c0a2d79d58?w=400&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=400&auto=format&fit=crop'
+        ]
+      },
+      {
+        date: '7 Mar 2026',
+        activities: [
+          {
+            id: 'lis-4',
+            time: '09:00',
+            title: 'Barrio Alfama',
+            location: 'Alfama',
+            type: 'activity'
+          }
+        ],
+        photos: [
+          'https://images.unsplash.com/photo-1564221710304-0b37c8b9d729?w=400&auto=format&fit=crop'
+        ]
+      },
+      { date: '8 Mar 2026', activities: [], photos: [] },
+      { date: '9 Mar 2026', activities: [], photos: [] },
+      {
+        date: '10 Mar 2026',
+        activities: [
+          {
+            id: 'lis-5',
+            time: '12:00',
+            title: 'Check-out Hotel',
+            location: 'Avenida da Liberdade',
+            type: 'hotel'
+          }
+        ],
+        photos: []
+      }
+    ]
+  },
+  'completed-3': {
+    name: 'Ámsterdam, Países Bajos',
+    dates: '20-25 Feb 2026',
+    image: 'https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=800&auto=format&fit=crop',
+    days: [
+      {
+        date: '20 Feb 2026',
+        activities: [
+          {
+            id: 'ams-1',
+            time: '15:00',
+            title: 'Check-in Hotel',
+            location: 'Canales de Ámsterdam',
+            type: 'hotel'
+          }
+        ],
+        photos: [
+          'https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=400&auto=format&fit=crop'
+        ]
+      },
+      {
+        date: '21 Feb 2026',
+        activities: [
+          {
+            id: 'ams-2',
+            time: '10:00',
+            title: 'Museo Van Gogh',
+            location: 'Museumplein 6',
+            type: 'activity'
+          },
+          {
+            id: 'ams-3',
+            time: '15:30',
+            title: 'Paseo en barco por los canales',
+            location: 'Canales centrales',
+            type: 'activity'
+          }
+        ],
+        photos: [
+          'https://images.unsplash.com/photo-1512470876302-972faa2aa9a4?w=400&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1584003564911-adb6b692ca94?w=400&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1459679749680-18eb1eb37418?w=400&auto=format&fit=crop'
+        ]
+      },
+      {
+        date: '22 Feb 2026',
+        activities: [
+          {
+            id: 'ams-4',
+            time: '09:00',
+            title: 'Casa de Ana Frank',
+            location: 'Prinsengracht 263-267',
+            type: 'activity'
+          }
+        ],
+        photos: [
+          'https://images.unsplash.com/photo-1586297098710-0382a496c814?w=400&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=400&auto=format&fit=crop'
+        ]
+      },
+      {
+        date: '23 Feb 2026',
+        activities: [
+          {
+            id: 'ams-5',
+            time: '11:00',
+            title: 'Mercado de las Flores',
+            location: 'Bloemenmarkt',
+            type: 'activity'
+          }
+        ],
+        photos: [
+          'https://images.unsplash.com/photo-1585211969224-3e992986159d?w=400&auto=format&fit=crop'
+        ]
+      },
+      { date: '24 Feb 2026', activities: [], photos: [] },
+      {
+        date: '25 Feb 2026',
+        activities: [
+          {
+            id: 'ams-6',
+            time: '12:00',
+            title: 'Check-out Hotel',
+            location: 'Canales de Ámsterdam',
+            type: 'hotel'
+          }
+        ],
+        photos: []
+      }
+    ]
+  },
   'new': {
     name: 'Roma, Italia',
     dates: '1-7 Jul 2026',
@@ -188,6 +428,24 @@ export default function TripDetail() {
   const coverPhotoInputRef = useRef<HTMLInputElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
 
+  // Verificar si el viaje está completado
+  const isCompletedTrip = () => {
+    try {
+      // Verificar si está en completedTrips de localStorage
+      const completedTrips = JSON.parse(localStorage.getItem('completedTrips') || '[]');
+      const isInCompleted = completedTrips.some((t: any) => t.id === tripId);
+
+      // También verificar si el ID comienza con 'completed-' (viajes de ejemplo de Mis Viajes)
+      const isExampleCompleted = tripId?.startsWith('completed-');
+
+      return isInCompleted || isExampleCompleted;
+    } catch {
+      return false;
+    }
+  };
+
+  const isTripCompleted = isCompletedTrip();
+
   // Obtener viaje de forma segura
   const getTripData = () => {
     try {
@@ -239,11 +497,32 @@ export default function TripDetail() {
   };
 
   const trip = getTripData();
+  const userProfile = getUserProfile();
 
   const [selectedDay, setSelectedDay] = useState(0);
   const [showAddActivity, setShowAddActivity] = useState(false);
   const [showEditTrip, setShowEditTrip] = useState(false);
   const [coverPhoto, setCoverPhoto] = useState(trip.image || '');
+  const [activityDocuments, setActivityDocuments] = useState<Record<string, ActivityDocument[]>>({});
+  const [selectedActivityForDoc, setSelectedActivityForDoc] = useState<string | null>(null);
+  const documentInputRef = useRef<HTMLInputElement>(null);
+
+  // Cargar documentos del usuario desde localStorage cuando el componente monta
+  useEffect(() => {
+    const userPhone = userProfile?.phone || 'default';
+    const storageKey = `trip_${tripId}_docs_${userPhone}`;
+    const stored = localStorage.getItem(storageKey);
+    if (stored) {
+      setActivityDocuments(JSON.parse(stored));
+    }
+  }, [tripId, userProfile?.phone]);
+
+  // Guardar documentos en localStorage cuando cambien
+  useEffect(() => {
+    const userPhone = userProfile?.phone || 'default';
+    const storageKey = `trip_${tripId}_docs_${userPhone}`;
+    localStorage.setItem(storageKey, JSON.stringify(activityDocuments));
+  }, [activityDocuments, tripId, userProfile?.phone]);
   const [newActivity, setNewActivity] = useState({
     startTime: '',
     endTime: '',
@@ -251,10 +530,23 @@ export default function TripDetail() {
     title: '',
     location: ''
   });
-  const [editedTrip, setEditedTrip] = useState({
+  const [editedTrip, setEditedTrip] = useState<{
+    name: string;
+    dates: string;
+    participants: Participant[];
+  }>({
     name: trip.name,
     dates: trip.dates,
-    participants: ['Tú', 'Carmen', 'Saline', 'Raúl']
+    participants: [
+      {
+        name: userProfile?.name || 'Tú',
+        phone: userProfile?.phone || '600 111 222',
+        isCurrentUser: true
+      },
+      { name: 'Carmen', phone: '612345678' },
+      { name: 'Saline', phone: '623456789' },
+      { name: 'Raúl', phone: '634567890' }
+    ]
   });
 
   // Validar selectedDay y obtener currentDay de forma segura
@@ -318,28 +610,39 @@ export default function TripDetail() {
     setShowEditTrip(false);
   };
 
-  const handleAddParticipant = () => {
-    setEditedTrip({
-      ...editedTrip,
-      participants: [...editedTrip.participants, '']
-    });
+  const handleAddDocument = (activityId: string) => {
+    setSelectedActivityForDoc(activityId);
+    documentInputRef.current?.click();
   };
 
-  const handleRemoveParticipant = (index: number) => {
-    const newParticipants = editedTrip.participants.filter((_, i) => i !== index);
-    setEditedTrip({
-      ...editedTrip,
-      participants: newParticipants
-    });
+  const handleDocumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && selectedActivityForDoc) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const newDocument: ActivityDocument = {
+          id: `doc_${Date.now()}`,
+          name: file.name,
+          url: reader.result as string,
+          type: file.type
+        };
+
+        setActivityDocuments(prev => ({
+          ...prev,
+          [selectedActivityForDoc]: [...(prev[selectedActivityForDoc] || []), newDocument]
+        }));
+
+        setSelectedActivityForDoc(null);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
-  const handleUpdateParticipant = (index: number, value: string) => {
-    const newParticipants = [...editedTrip.participants];
-    newParticipants[index] = value;
-    setEditedTrip({
-      ...editedTrip,
-      participants: newParticipants
-    });
+  const handleDeleteDocument = (activityId: string, docId: string) => {
+    setActivityDocuments(prev => ({
+      ...prev,
+      [activityId]: prev[activityId].filter(doc => doc.id !== docId)
+    }));
   };
 
   return (
@@ -389,39 +692,10 @@ export default function TripDetail() {
                   />
                 </div>
 
-                <div>
-                  <label className="text-sm text-gray-600 mb-2 block">Participantes</label>
-                  <div className="space-y-2">
-                    {editedTrip.participants.map((participant, index) => (
-                      <div key={index} className="flex gap-2">
-                        <div className="flex-1 relative">
-                          <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                          <input
-                            type="text"
-                            value={participant}
-                            onChange={(e) => handleUpdateParticipant(index, e.target.value)}
-                            placeholder="Nombre del participante"
-                            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full text-sm"
-                          />
-                        </div>
-                        {editedTrip.participants.length > 1 && (
-                          <button
-                            onClick={() => handleRemoveParticipant(index)}
-                            className="p-2 text-gray-400 hover:text-[#EEB19A] transition-colors"
-                          >
-                            <X className="w-5 h-5" />
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                    <button
-                      onClick={handleAddParticipant}
-                      className="w-full py-2 border-2 border-dashed border-gray-300 rounded-full text-sm text-gray-500 hover:border-[#92C0E8] hover:text-[#92C0E8] transition-colors"
-                    >
-                      + Añadir participante
-                    </button>
-                  </div>
-                </div>
+                <ParticipantSelector
+                  participants={editedTrip.participants}
+                  onChange={(participants) => setEditedTrip({ ...editedTrip, participants })}
+                />
 
                 <button
                   onClick={handleSaveEditTrip}
@@ -449,10 +723,10 @@ export default function TripDetail() {
                 </button>
               </div>
             ) : (
-              <div className="relative h-48 bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center">
+              <div className="relative h-48 bg-gray-200 flex items-center justify-center">
                 <div className="text-center">
-                  <Camera className="w-16 h-16 text-gray-500 opacity-40 mx-auto mb-2" />
-                  <p className="text-gray-600 text-sm">Aún no hay imagen de portada</p>
+                  <Camera className="w-16 h-16 text-gray-400 opacity-50 mx-auto mb-2" />
+                  <p className="text-gray-500 text-sm">Aún no hay imagen de portada</p>
                 </div>
                 <button onClick={handleChangeCoverPhoto} className="absolute bottom-4 right-4 bg-white p-3 rounded-full hover:bg-gray-50 transition-colors shadow-lg">
                   <Camera className="w-5 h-5 text-gray-600" />
@@ -469,20 +743,31 @@ export default function TripDetail() {
           </div>
 
           {/* Trip info card */}
-          <div className="bg-white rounded-2xl p-4 shadow-sm mt-4 flex items-center justify-between">
-            <div className="flex items-center gap-2 text-gray-600">
-              <Plane className="w-5 h-5 text-gray-400" />
-              <span className="text-gray-400">{trip.name}</span>
-            </div>
-            <div className="flex items-center gap-2 text-gray-600">
-              <Calendar className="w-5 h-5 text-gray-400" />
-              <span className="text-sm text-gray-400">{trip.dates}</span>
-              <button
-                onClick={() => setShowEditTrip(true)}
-                className="ml-2 p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <Edit2 className="w-4 h-4 text-[#92C0E8]" />
-              </button>
+          <div className="bg-white rounded-2xl p-4 shadow-sm mt-4">
+            {isTripCompleted && (
+              <div className="mb-3 pb-3 border-b border-gray-100">
+                <span className="inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-medium">
+                  ✓ Viaje completado
+                </span>
+              </div>
+            )}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-gray-600">
+                <Plane className="w-5 h-5 text-gray-400" />
+                <span className="text-gray-400">{trip.name}</span>
+              </div>
+              <div className="flex items-center gap-2 text-gray-600">
+                <Calendar className="w-5 h-5 text-gray-400" />
+                <span className="text-sm text-gray-400">{trip.dates}</span>
+                {!isTripCompleted && (
+                  <button
+                    onClick={() => setShowEditTrip(true)}
+                    className="ml-2 p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  >
+                    <Edit2 className="w-4 h-4 text-[#92C0E8]" />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -529,12 +814,14 @@ export default function TripDetail() {
         <div className="px-4 md:px-6 lg:px-8 mb-6 md:mb-8">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg md:text-xl lg:text-2xl">Actividades del día</h2>
-            <button
-              onClick={() => setShowAddActivity(true)}
-              className="bg-[#EEB19A] text-white px-4 py-2 rounded-full text-sm flex items-center gap-2 hover:bg-[#e5a589] transition-colors"
-            >
-              + Añadir
-            </button>
+            {!isTripCompleted && (
+              <button
+                onClick={() => setShowAddActivity(true)}
+                className="bg-[#EEB19A] text-white px-4 py-2 rounded-full text-sm flex items-center gap-2 hover:bg-[#e5a589] transition-colors"
+              >
+                + Añadir
+              </button>
+            )}
           </div>
 
           {/* Add activity modal */}
@@ -626,20 +913,23 @@ export default function TripDetail() {
 
             {currentDay.activities.map((activity) => {
               const ActivityIconComponent = activity.type === 'transport' ? Plane : activity.type === 'hotel' ? Hotel : ActivityIcon;
+              const docs = activityDocuments[activity.id] || [];
 
               return (
                 <div
                   key={activity.id}
                   className="bg-white rounded-3xl p-4 shadow-md relative"
                 >
-                  <button
-                    onClick={() => handleDeleteActivity(activity.id)}
-                    className="absolute top-4 right-4 text-[#EEB19A]"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
+                  {!isTripCompleted && (
+                    <button
+                      onClick={() => handleDeleteActivity(activity.id)}
+                      className="absolute top-4 right-4 text-[#EEB19A]"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  )}
 
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 mb-3">
                     <div className="bg-[#FFE5DD] p-3 rounded-2xl self-start">
                       <ActivityIconComponent className="w-6 h-6 text-[#EEB19A]" />
                     </div>
@@ -654,6 +944,50 @@ export default function TripDetail() {
                         </span>
                       </div>
                     </div>
+                  </div>
+
+                  {/* Documentos y botón añadir documento */}
+                  <div className="border-t border-gray-200 pt-3 mt-3">
+                    {docs.length > 0 && (
+                      <>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Lock className="w-3 h-3 text-gray-400" />
+                          <span className="text-xs text-gray-500">Solo visible para ti</span>
+                        </div>
+                        <div className="space-y-2 mb-3">
+                          {docs.map((doc) => (
+                            <div key={doc.id} className="flex items-center gap-2 bg-[#E8F2FF] p-2 rounded-xl">
+                              <File className="w-4 h-4 text-[#92C0E8]" />
+                              <span className="text-sm flex-1 truncate">{doc.name}</span>
+                              <a
+                                href={doc.url}
+                                download={doc.name}
+                                className="text-[#92C0E8] hover:text-[#7eb3df] text-xs"
+                              >
+                                Ver
+                              </a>
+                              {!isTripCompleted && (
+                                <button
+                                  onClick={() => handleDeleteDocument(activity.id, doc.id)}
+                                  className="text-red-500 hover:text-red-600"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                    {!isTripCompleted && (
+                      <button
+                        onClick={() => handleAddDocument(activity.id)}
+                        className="w-full py-2 border-2 border-dashed border-[#92C0E8] rounded-xl text-sm text-[#92C0E8] hover:bg-[#E8F2FF] transition-colors flex items-center justify-center gap-2"
+                      >
+                        <FileText className="w-4 h-4" />
+                        <span>{activity.type === 'transport' ? 'Añadir billete' : activity.type === 'hotel' ? 'Añadir reserva' : 'Añadir documento'}</span>
+                      </button>
+                    )}
                   </div>
                 </div>
               );
@@ -676,6 +1010,13 @@ export default function TripDetail() {
               type="file"
               accept="image/*"
               onChange={handlePhotoChange}
+              className="hidden"
+            />
+            <input
+              ref={documentInputRef}
+              type="file"
+              accept="image/*,application/pdf"
+              onChange={handleDocumentChange}
               className="hidden"
             />
           </div>

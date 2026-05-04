@@ -6,6 +6,7 @@ export default function VerifyLogin() {
   const navigate = useNavigate();
   const [code, setCode] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState('');
 
   const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -18,12 +19,22 @@ export default function VerifyLogin() {
     } else if (numbers.length <= 6) {
       setCode(`${numbers.slice(0, 3)}-${numbers.slice(3)}`);
     }
+
+    // Limpiar error al escribir
+    if (error) setError('');
   };
 
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem('userType', 'existing');
-    navigate('/home');
+
+    // Simular validación (en producción validaría con el backend)
+    const validCode = '123-456';
+    if (code === validCode) {
+      localStorage.setItem('userType', 'existing');
+      navigate('/home');
+    } else {
+      setError('Código incorrecto. Por favor, verifica el código que has recibido por SMS.');
+    }
   };
 
   const handleResend = () => {
@@ -59,9 +70,16 @@ export default function VerifyLogin() {
                 onChange={handleCodeChange}
                 placeholder="XXX-XXX"
                 maxLength={7}
-                className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#92C0E8] text-center tracking-widest text-lg"
+                className={`w-full px-4 py-3 border rounded-full focus:outline-none focus:ring-2 text-center tracking-widest text-lg ${
+                  error
+                    ? 'border-red-500 focus:ring-red-500'
+                    : 'border-gray-300 focus:ring-[#92C0E8]'
+                }`}
                 required
               />
+              {error && (
+                <p className="text-red-500 text-sm mt-2 text-center">{error}</p>
+              )}
             </div>
 
             {/* Remember me checkbox */}

@@ -23,6 +23,13 @@ import Profile from "./components/settings/Profile";
 import Friends from "./components/settings/Friends";
 import Notifications from "./components/settings/Notifications";
 import Privacy from "./components/settings/Privacy";
+import Help from "./components/settings/Help";
+import HowToCreateTrip from "./components/settings/help/HowToCreateTrip";
+import HowToInviteFriends from "./components/settings/help/HowToInviteFriends";
+import ManageHotelBookings from "./components/settings/help/ManageHotelBookings";
+import FAQ from "./components/settings/help/FAQ";
+import Contact from "./components/settings/Contact";
+import Contacts from "./components/settings/Contacts";
 
 export const router = createBrowserRouter([
   {
@@ -53,6 +60,13 @@ export const router = createBrowserRouter([
       { path: "friends", Component: Friends },
       { path: "notifications", Component: Notifications },
       { path: "privacy", Component: Privacy },
+      { path: "help", Component: Help },
+      { path: "help/create-trip", Component: HowToCreateTrip },
+      { path: "help/invite-friends", Component: HowToInviteFriends },
+      { path: "help/hotel-bookings", Component: ManageHotelBookings },
+      { path: "help/faq", Component: FAQ },
+      { path: "contact", Component: Contact },
+      { path: "contacts", Component: Contacts },
     ],
   },
 ]);

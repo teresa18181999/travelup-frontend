@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { Plane, Phone, User } from 'lucide-react';
+import { saveUserProfile } from '../../utils/userProfile';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -16,11 +17,26 @@ export default function Register() {
     const value = e.target.value;
     // Solo permitir números después del prefijo
     const numbers = value.replace(/\D/g, '');
-    setPhone(numbers);
+
+    // Formatear como XXX XX XX XX
+    let formatted = '';
+    if (numbers.length <= 3) {
+      formatted = numbers;
+    } else if (numbers.length <= 5) {
+      formatted = `${numbers.slice(0, 3)} ${numbers.slice(3)}`;
+    } else if (numbers.length <= 7) {
+      formatted = `${numbers.slice(0, 3)} ${numbers.slice(3, 5)} ${numbers.slice(5)}`;
+    } else if (numbers.length <= 9) {
+      formatted = `${numbers.slice(0, 3)} ${numbers.slice(3, 5)} ${numbers.slice(5, 7)} ${numbers.slice(7, 9)}`;
+    }
+
+    setPhone(formatted);
   };
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
+    // Guardar perfil del usuario
+    saveUserProfile(name, phone.replace(/\s/g, ''));
     navigate('/verify-register');
   };
 
@@ -66,16 +82,16 @@ export default function Register() {
               </label>
               <div className="relative">
                 <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <span className="absolute left-12 top-1/2 -translate-y-1/2 text-gray-600 font-medium">
+                <span className="absolute left-12 top-1/2 -translate-y-1/2 text-gray-900 select-none pointer-events-none">
                   +34
                 </span>
                 <input
                   type="tel"
                   value={phone}
                   onChange={handlePhoneChange}
-                  placeholder="600 000 000"
-                  maxLength={9}
-                  className="w-full pl-[5rem] pr-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#92C0E8] text-gray-600"
+                  placeholder="618 94 11 68"
+                  maxLength={12}
+                  className="w-full pl-[5rem] pr-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#92C0E8] text-gray-900"
                   required
                 />
               </div>

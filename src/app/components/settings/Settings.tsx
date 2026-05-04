@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router';
-import { ArrowLeft, User, Users, Bell, Lock, Trash2, LogOut, ChevronRight } from 'lucide-react';
+import { ArrowLeft, User, Users, Bell, Lock, Trash2, LogOut, ChevronRight, HelpCircle, MessageCircle } from 'lucide-react';
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -54,6 +54,19 @@ export default function Settings() {
             </button>
 
             <button
+              onClick={() => navigate('/contacts')}
+              className="w-full px-4 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors border-t border-gray-100"
+            >
+              <div className="flex items-center gap-3">
+                <div className="bg-[#E8F2FF] p-2 rounded-lg">
+                  <Users className="w-5 h-5 text-[#92C0E8]" />
+                </div>
+                <span>Contactos</span>
+              </div>
+              <ChevronRight className="w-5 h-5 text-gray-400" />
+            </button>
+
+            <button
               onClick={() => navigate('/friends')}
               className="w-full px-4 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors border-t border-gray-100"
             >
@@ -88,6 +101,39 @@ export default function Settings() {
                   <Lock className="w-5 h-5 text-[#92C0E8]" />
                 </div>
                 <span>Privacidad y seguridad</span>
+              </div>
+              <ChevronRight className="w-5 h-5 text-gray-400" />
+            </button>
+          </div>
+
+          {/* Help & Support section */}
+          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div className="p-4 border-b border-gray-100">
+              <h2 className="text-sm text-gray-500">Ayuda y Soporte</h2>
+            </div>
+
+            <button
+              onClick={() => navigate('/help')}
+              className="w-full px-4 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <div className="bg-[#FFF5F0] p-2 rounded-lg">
+                  <HelpCircle className="w-5 h-5 text-[#EEB19A]" />
+                </div>
+                <span>Centro de ayuda</span>
+              </div>
+              <ChevronRight className="w-5 h-5 text-gray-400" />
+            </button>
+
+            <button
+              onClick={() => navigate('/contact')}
+              className="w-full px-4 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors border-t border-gray-100"
+            >
+              <div className="flex items-center gap-3">
+                <div className="bg-[#FFF5F0] p-2 rounded-lg">
+                  <MessageCircle className="w-5 h-5 text-[#EEB19A]" />
+                </div>
+                <span>Contactar soporte</span>
               </div>
               <ChevronRight className="w-5 h-5 text-gray-400" />
             </button>

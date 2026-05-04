@@ -97,10 +97,10 @@ export default function Friends() {
                 >
                   <div className="relative h-40">
                     {invitation.type === 'automatic' ? (
-                      <div className="w-full h-full bg-gradient-to-br from-[#92C0E8] to-[#EEB19A] flex items-center justify-center">
-                        <div className="text-center text-white">
-                          <MapPin className="w-16 h-16 mx-auto mb-2 opacity-50" />
-                          <p className="text-sm">Destino por decidir</p>
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                        <div className="text-center">
+                          <MapPin className="w-16 h-16 mx-auto mb-2 text-gray-400 opacity-50" />
+                          <p className="text-sm text-gray-500">Destino por decidir</p>
                         </div>
                       </div>
                     ) : (

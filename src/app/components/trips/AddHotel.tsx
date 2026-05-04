@@ -205,7 +205,7 @@ export default function AddHotel() {
       <div className="max-w-md mx-auto min-h-full flex flex-col">
         <button
           onClick={() => navigate('/home')}
-          className="flex items-center gap-2 text-gray-400 px-4 md:px-6 py-4 md:py-5 hover:text-gray-600 transition-colors"
+          className="flex items-center gap-2 text-gray-400 px-4 md:px-6 py-4 md:py-5 hover:text-gray-600 transition-colors md:fixed md:top-4 md:left-4 md:z-10"
         >
           <ArrowLeft className="w-5 h-5" />
           <span>Salir</span>
@@ -225,7 +225,13 @@ export default function AddHotel() {
         )}
 
         <div className="flex-1 px-4 pb-8">
-          <div className="bg-white rounded-3xl p-6 shadow-lg">
+          <div className="bg-white rounded-3xl p-6 shadow-lg relative">
+            <button
+              onClick={() => navigate('/home')}
+              className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
             <div className="flex items-center gap-3 mb-6">
               <div className="bg-[#92C0E8]/20 p-3 rounded-2xl">
                 <Sparkles className="w-8 h-8 text-[#92C0E8]" />
