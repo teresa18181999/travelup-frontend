@@ -30,6 +30,8 @@ import ManageHotelBookings from "./components/settings/help/ManageHotelBookings"
 import FAQ from "./components/settings/help/FAQ";
 import Contact from "./components/settings/Contact";
 import Contacts from "./components/settings/Contacts";
+import AdminLogin from "./components/admin/AdminLogin";
+import AdminPanel from "./components/admin/AdminPanel";
 
 export const router = createBrowserRouter([
   {
@@ -67,6 +69,8 @@ export const router = createBrowserRouter([
       { path: "help/faq", Component: FAQ },
       { path: "contact", Component: Contact },
       { path: "contacts", Component: Contacts },
+      { path: "admin-login", Component: AdminLogin },
+      { path: "admin", Component: AdminPanel },
     ],
   },
 ]);

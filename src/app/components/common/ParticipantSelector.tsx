@@ -106,7 +106,7 @@ export default function ParticipantSelector({ participants, onChange }: Particip
       {/* Botones de acción */}
       <div className="space-y-2">
         {/* Selector de contactos guardados */}
-        {availableContacts.length > 0 && !showAddNew && (
+        {!showAddNew && (
           <div className="relative">
             <button
               type="button"
@@ -118,22 +118,38 @@ export default function ParticipantSelector({ participants, onChange }: Particip
 
             {showContactsList && (
               <div className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-[#92C0E8] rounded-xl shadow-lg max-h-60 overflow-y-auto z-10">
-                {availableContacts.map((contact) => (
-                  <button
-                    key={contact.id}
-                    type="button"
-                    onClick={() => handleAddContact(contact)}
-                    className="w-full px-4 py-3 text-left hover:bg-[#E8F2FF] transition-colors border-b border-gray-100 last:border-0"
-                  >
-                    <div className="flex items-center gap-3">
-                      <User className="w-4 h-4 text-[#92C0E8]" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{contact.name}</p>
-                        <p className="text-xs text-gray-500">+34 {contact.phone}</p>
+                {availableContacts.length === 0 ? (
+                  <div className="p-4 text-center">
+                    <p className="text-sm text-gray-500 mb-3">No tienes contactos guardados</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowContactsList(false);
+                        setShowAddNew(true);
+                      }}
+                      className="text-xs text-[#92C0E8] hover:underline"
+                    >
+                      Añadir nuevo contacto
+                    </button>
+                  </div>
+                ) : (
+                  availableContacts.map((contact) => (
+                    <button
+                      key={contact.id}
+                      type="button"
+                      onClick={() => handleAddContact(contact)}
+                      className="w-full px-4 py-3 text-left hover:bg-[#E8F2FF] transition-colors border-b border-gray-100 last:border-0"
+                    >
+                      <div className="flex items-center gap-3">
+                        <User className="w-4 h-4 text-[#92C0E8]" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{contact.name}</p>
+                          <p className="text-xs text-gray-500">+34 {contact.phone}</p>
+                        </div>
                       </div>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  ))
+                )}
               </div>
             )}
           </div>
@@ -161,7 +177,7 @@ export default function ParticipantSelector({ participants, onChange }: Particip
                 type="tel"
                 value={newPhone}
                 onChange={(e) => handlePhoneChange(e.target.value)}
-                placeholder="618 94 11 68"
+                placeholder="600 000 000"
                 maxLength={12}
                 className="w-full pl-[4.5rem] pr-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#92C0E8] text-gray-900"
               />
