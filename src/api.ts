@@ -1,1 +1,1 @@
-export const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/TravelUpp';
+export const API_BASE = 'https://travelup-backend-production.up.railway.app';
