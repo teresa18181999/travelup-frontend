@@ -1,69 +1,74 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Plane } from 'lucide-react';
+import { API_BASE } from '../../../api';
 
 export default function VerifyLogin() {
   const navigate = useNavigate();
   const [code, setCode] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // Eliminar todo lo que no sea n煤mero
     const numbers = value.replace(/\D/g, '');
-
-    // Formatear como XXX-XXX
     if (numbers.length <= 3) {
       setCode(numbers);
     } else if (numbers.length <= 6) {
       setCode(`${numbers.slice(0, 3)}-${numbers.slice(3)}`);
     }
-
-    // Limpiar error al escribir
     if (error) setError('');
   };
 
-  const handleVerify = (e: React.FormEvent) => {
+  const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
 
-    // Simular validaci贸n (en producci贸n validar铆a con el backend)
-    const validCode = '123-456';
-    if (code === validCode) {
-      localStorage.setItem('userType', 'existing');
-      navigate('/home');
-    } else {
-      setError('C贸digo incorrecto. Por favor, verifica el c贸digo que has recibido por SMS.');
+    try {
+      const response = await fetch(`${API_BASE}/api/verificar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ codigo: code }),
+      });
+
+      const data = await response.json();
+
+      if (data.exito) {
+        localStorage.setItem('userType', 'existing');
+        if (rememberMe) localStorage.setItem('rememberMe', 'true');
+        navigate('/home');
+      } else {
+        setError('C骴igo incorrecto. Por favor, verifica el c骴igo que has recibido por SMS.');
+      }
+    } catch {
+      setError('No se pudo conectar con el servidor');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleResend = () => {
-    alert('C贸digo reenviado');
+    alert('C骴igo reenviado');
   };
 
   return (
     <div className="size-full bg-[#E8F2FF] flex items-center justify-center p-6">
       <div className="w-full max-w-sm md:max-w-md">
         <div className="bg-white rounded-[40px] shadow-xl p-8">
-          {/* Logo */}
           <div className="flex justify-center mb-6">
             <div className="bg-[#92C0E8] p-5 rounded-full">
               <Plane className="w-10 h-10 text-white" />
             </div>
           </div>
-
-          {/* Title */}
           <h1 className="text-3xl text-center text-[#92C0E8] mb-3">TravelUp</h1>
           <p className="text-center text-gray-600 text-sm mb-8">
-            El viaje que sue帽as empieza con un match.
+            El viaje que sue馻s empieza con un match.
           </p>
-
-          {/* Form */}
           <form onSubmit={handleVerify} className="space-y-6">
             <div>
-              <label className="block text-sm mb-2">
-                C贸digo de confirmaci贸n
-              </label>
+              <label className="block text-sm mb-2">C骴igo de confirmaci髇</label>
               <input
                 type="text"
                 value={code}
@@ -71,18 +76,12 @@ export default function VerifyLogin() {
                 placeholder="XXX-XXX"
                 maxLength={7}
                 className={`w-full px-4 py-3 border rounded-full focus:outline-none focus:ring-2 text-center tracking-widest text-lg ${
-                  error
-                    ? 'border-red-500 focus:ring-red-500'
-                    : 'border-gray-300 focus:ring-[#92C0E8]'
+                  error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-[#92C0E8]'
                 }`}
                 required
               />
-              {error && (
-                <p className="text-red-500 text-sm mt-2 text-center">{error}</p>
-              )}
+              {error && <p className="text-red-500 text-sm mt-2 text-center">{error}</p>}
             </div>
-
-            {/* Remember me checkbox */}
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -92,27 +91,21 @@ export default function VerifyLogin() {
                 className="w-4 h-4 rounded border-gray-300 text-[#92C0E8] focus:ring-[#92C0E8]"
               />
               <label htmlFor="rememberMe" className="text-sm text-gray-600 cursor-pointer">
-                Mantener sesi贸n iniciada en este dispositivo
+                Mantener sesi髇 iniciada en este dispositivo
               </label>
             </div>
-
             <button
               type="submit"
-              className="w-full bg-[#92C0E8] text-white py-3 rounded-full hover:bg-[#7eb3df] transition-all"
+              disabled={loading}
+              className="w-full bg-[#92C0E8] text-white py-3 rounded-full hover:bg-[#7eb3df] transition-all disabled:opacity-50"
             >
-              Iniciar Sesi贸n
+              {loading ? 'Verificando...' : 'Iniciar Sesi髇'}
             </button>
           </form>
-
-          {/* Footer */}
           <div className="mt-6 text-center">
             <p className="text-gray-600 text-sm">
-              驴No te ha llegado?{' '}
-              <button
-                type="button"
-                onClick={handleResend}
-                className="text-[#92C0E8] hover:underline"
-              >
+              縉o te ha llegado?{' '}
+              <button type="button" onClick={handleResend} className="text-[#92C0E8] hover:underline">
                 Reenviar
               </button>
             </p>
